@@ -18,7 +18,7 @@ interface AuthState {
   initializeFromStorage: () => void;
 }
 
-const useAuthStore = create<AuthState>((set: any) => ({
+const useAuthStore = create<AuthState>((set: any, get: any) => ({
   user: null,
   token: null,
   isAuthenticated: false,
@@ -44,7 +44,9 @@ const useAuthStore = create<AuthState>((set: any) => ({
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('token');
       const userStr = localStorage.getItem('user');
-      if (token && userStr) {
+      // Only set state if we don't already have a user to avoid
+      // triggering repeated updates during component mounts.
+      if (token && userStr && !get().user) {
         const user = JSON.parse(userStr);
         set({ token, user, isAuthenticated: true });
       }
