@@ -146,16 +146,19 @@ exports.updateProfile = async (req, res) => {
     const patientId = req.user.id;
     const { allergies, medications, chronicConditions, emergencyContact, bloodType, height, weight } = req.body;
 
+    // Get current patient data first
+    const currentPatient = await Patient.findById(patientId);
+    
     const patient = await Patient.findByIdAndUpdate(
       patientId,
       {
-        allergies: allergies || patient.allergies,
-        medications: medications || patient.medications,
-        chronicConditions: chronicConditions || patient.chronicConditions,
-        emergencyContact: emergencyContact || patient.emergencyContact,
-        bloodType: bloodType || patient.bloodType,
-        height: height || patient.height,
-        weight: weight || patient.weight,
+        allergies: allergies !== undefined ? allergies : currentPatient.allergies,
+        medications: medications !== undefined ? medications : currentPatient.medications,
+        chronicConditions: chronicConditions !== undefined ? chronicConditions : currentPatient.chronicConditions,
+        emergencyContact: emergencyContact !== undefined ? emergencyContact : currentPatient.emergencyContact,
+        bloodType: bloodType !== undefined ? bloodType : currentPatient.bloodType,
+        height: height !== undefined ? height : currentPatient.height,
+        weight: weight !== undefined ? weight : currentPatient.weight,
         updatedAt: new Date()
       },
       { new: true }
