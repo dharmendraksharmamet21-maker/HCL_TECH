@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
+let mongoMemoryServer = null;
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -52,7 +53,30 @@ app.use(errorHandler);
 // Database connection
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/healthcare-wellness');
+    let mongoUri = process.env.MONGODB_URI;
+
+    // If no external URI is provided and we're in development, start an
+    // in-memory MongoDB instance so the app can run locally without
+    // requiring Docker or a system MongoDB service.
+    if (!mongoUri && (process.env.NODE_ENV || 'development') === 'development') {
+      try {
+        // Lazy-require the memory server only in development to avoid
+        // adding runtime overhead in production.
+        const { MongoMemoryServer } = require('mongodb-memory-server');
+        mongoMemoryServer = await MongoMemoryServer.create();
+        mongoUri = mongoMemoryServer.getUri();
+        console.log('⚙️  Started in-memory MongoDB for development');
+      } catch (memErr) {
+        console.error('✗ Failed to start in-memory MongoDB:', memErr.message);
+      }
+    }
+
+    if (!mongoUri) {
+      // Fallback to localhost if nothing else is available
+      mongoUri = 'mongodb://localhost:27017/healthcare-wellness';
+    }
+
+    await mongoose.connect(mongoUri);
     console.log('✓ MongoDB connected successfully');
   } catch (err) {
     console.error('✗ MongoDB connection failed:', err.message);
@@ -65,6 +89,27 @@ const connectDB = async () => {
     }
   }
 };
+
+// Ensure the in-memory server is stopped when the process exits
+const cleanup = async () => {
+  try {
+    if (mongoMemoryServer) {
+      await mongoMemoryServer.stop();
+      console.log('⚙️  Stopped in-memory MongoDB');
+    }
+  } catch (e) {
+    // ignore
+  }
+};
+
+process.on('SIGINT', async () => {
+  await cleanup();
+  process.exit(0);
+});
+process.on('SIGTERM', async () => {
+  await cleanup();
+  process.exit(0);
+});
 
 // Connect to database
 connectDB();
