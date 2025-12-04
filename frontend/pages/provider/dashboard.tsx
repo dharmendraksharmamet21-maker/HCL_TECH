@@ -26,6 +26,7 @@ export default function ProviderDashboard() {
   const user = useAuthStore((state: any) => state.user);
   const logout = useAuthStore((state: any) => state.logout);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const missedReminders = dashboardData?.missedReminders ?? [];
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -190,11 +191,11 @@ export default function ProviderDashboard() {
         </div>
 
         {/* Missed Reminders */}
-        {dashboardData?.missedReminders?.length > 0 && (
+        {missedReminders.length > 0 && (
           <div className="bg-white rounded-lg shadow p-6 mt-8">
             <h2 className="text-xl font-bold mb-4 text-red-600">⚠️ Missed Reminders</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {dashboardData.missedReminders.map((reminder: any) => (
+              {missedReminders.map((reminder: any) => (
                 <div key={reminder._id} className="p-4 border-l-4 border-red-500 bg-red-50">
                   <p className="font-semibold text-gray-900">{reminder.title}</p>
                   <p className="text-sm text-gray-600">{reminder.patientId?.firstName} {reminder.patientId?.lastName}</p>

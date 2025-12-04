@@ -56,7 +56,13 @@ const connectDB = async () => {
     console.log('✓ MongoDB connected successfully');
   } catch (err) {
     console.error('✗ MongoDB connection failed:', err.message);
-    process.exit(1);
+    // In production we should fail fast, but in development keep the server
+    // running so health checks and non-DB routes can be used for debugging.
+    if (process.env.NODE_ENV === 'production') {
+      process.exit(1);
+    } else {
+      console.warn('Continuing without database connection (development mode). Some features will be unavailable.');
+    }
   }
 };
 
