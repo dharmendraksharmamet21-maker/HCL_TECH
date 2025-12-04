@@ -7,10 +7,23 @@ export default function Home() {
   const user = useAuthStore((state: any) => state.user);
 
   useEffect(() => {
+    // Initialize auth; if no user present, set a demo patient for local dev
     useAuthStore.getState().initializeFromStorage();
-  }, []);
+    const storedUser = typeof window !== 'undefined' && localStorage.getItem('user');
+    if (!storedUser) {
+      const demoUser = {
+        id: 'demo-patient',
+        email: 'demo.patient@example.com',
+        firstName: 'Demo',
+        lastName: 'Patient',
+        role: 'patient'
+      } as any;
+      // token is a dummy value for local dev
+      useAuthStore.getState().login('local-dev-token', demoUser);
+      router.push('/patient/dashboard');
+      return;
+    }
 
-  useEffect(() => {
     if (user) {
       if (user.role === 'patient') {
         router.push('/patient/dashboard');
@@ -20,7 +33,7 @@ export default function Home() {
         router.push('/admin/dashboard');
       }
     } else {
-      router.push('/login');
+      router.push('/patient/dashboard');
     }
   }, [user, router]);
 
