@@ -46,10 +46,16 @@ export default function PatientDashboard() {
   const fetchDashboardData = async () => {
     try {
       setIsLoading(true);
+      console.log('Fetching dashboard from:', 'http://localhost:5000/api/patient/dashboard');
       const response = await api.get('/patient/dashboard');
+      console.log('Dashboard response:', response.data);
       setDashboardData(response.data);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to fetch dashboard data');
+      console.error('Dashboard fetch error:', err);
+      console.error('Error response:', err.response);
+      const errorMsg = err.response?.data?.error || err.message || 'Failed to fetch dashboard data';
+      console.error('Error message:', errorMsg);
+      setError(errorMsg);
     } finally {
       setIsLoading(false);
     }
