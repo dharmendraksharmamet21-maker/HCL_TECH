@@ -2,11 +2,41 @@ const Patient = require('../models/Patient');
 const WellnessMetric = require('../models/WellnessMetric');
 const PreventiveCareReminder = require('../models/PreventiveCareReminder');
 const HealthTip = require('../models/HealthTip');
+const mongoose = require('mongoose');
 
 // Get patient dashboard data
 exports.getDashboard = async (req, res) => {
   try {
-    const patientId = req.user.id;
+    // If the DB is not connected (e.g., running without MongoDB), return
+    // a static demo dashboard so the frontend can render during local dev.
+    if (mongoose.connection.readyState !== 1) {
+      const demoResponse = {
+        todayMetric: { steps: 3200, sleepHours: 7, waterIntake: 1.5, activeTime: 25 },
+        weekMetrics: [],
+        upcomingReminders: [],
+        missedReminders: [],
+        healthTip: { title: 'Stay hydrated', content: 'Drink water regularly.', category: 'Hydration' },
+        patient: { firstName: 'Demo', lastName: 'Patient', profilePicture: null }
+      };
+      return res.status(200).json(demoResponse);
+    }
+
+    // Support public access for local dev: if no authenticated user,
+    // ensure a demo patient exists and use its id.
+    let patientId;
+    if (req.user && req.user.id) {
+      patientId = req.user.id;
+    } else {
+      let demo = await Patient.findOne({ email: 'demo.patient@example.com' });
+      if (!demo) {
+        demo = await Patient.create({
+          email: 'demo.patient@example.com',
+          firstName: 'Demo',
+          lastName: 'Patient'
+        });
+      }
+      patientId = demo._id.toString();
+    }
     
     // Get today's wellness metrics
     const today = new Date();
