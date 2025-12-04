@@ -12,6 +12,7 @@ const providerRoutes = require('./routes/providerRoutes');
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
 const { apiLimiter, authLimiter } = require('./middleware/rateLimiter');
+const requestLogger = require('./middleware/logger');
 
 // Initialize Express app
 const app = express();
@@ -21,6 +22,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(requestLogger);
 
 // Apply rate limiting to all API routes
 app.use('/api/', apiLimiter);
