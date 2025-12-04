@@ -23,8 +23,8 @@ interface DashboardData {
 
 export default function ProviderDashboard() {
   const router = useRouter();
-  const user = useAuthStore((state) => state.user);
-  const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state: any) => state.user);
+  const logout = useAuthStore((state: any) => state.logout);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -111,7 +111,7 @@ export default function ProviderDashboard() {
               <div>
                 <p className="text-gray-600 text-sm">High Compliance</p>
                 <p className="text-3xl font-bold text-green-600">
-                  {dashboardData?.complianceData?.filter(c => c.adherenceStatus === 'high').length || 0}
+                  {dashboardData?.complianceData?.filter((c: any) => c.adherenceStatus === 'high').length || 0}
                 </p>
               </div>
               <span className="text-4xl">✅</span>
@@ -123,7 +123,7 @@ export default function ProviderDashboard() {
               <div>
                 <p className="text-gray-600 text-sm">Low Adherence</p>
                 <p className="text-3xl font-bold text-red-600">
-                  {dashboardData?.complianceData?.filter(c => c.adherenceStatus === 'low').length || 0}
+                  {dashboardData?.complianceData?.filter((c: any) => c.adherenceStatus === 'low').length || 0}
                 </p>
               </div>
               <span className="text-4xl">⚠️</span>
@@ -137,7 +137,7 @@ export default function ProviderDashboard() {
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-bold mb-4">📊 Patient Compliance</h2>
               <div className="space-y-4">
-                {dashboardData?.complianceData?.map((patient) => (
+                {dashboardData?.complianceData?.map((patient: any) => (
                   <div key={patient.patientId} className="p-4 border border-gray-200 rounded-lg">
                     <div className="flex justify-between items-start mb-2">
                       <div>

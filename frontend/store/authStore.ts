@@ -18,12 +18,12 @@ interface AuthState {
   initializeFromStorage: () => void;
 }
 
-const useAuthStore = create<AuthState>((set) => ({
+const useAuthStore = create<AuthState>((set: any) => ({
   user: null,
   token: null,
   isAuthenticated: false,
 
-  login: (token, user) => {
+  login: (token: string, user: User) => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     set({ token, user, isAuthenticated: true });
@@ -35,7 +35,7 @@ const useAuthStore = create<AuthState>((set) => ({
     set({ token: null, user: null, isAuthenticated: false });
   },
 
-  setUser: (user) => {
+  setUser: (user: User) => {
     localStorage.setItem('user', JSON.stringify(user));
     set({ user });
   },

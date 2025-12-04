@@ -21,7 +21,7 @@ export default function Register() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const login = useAuthStore((state) => state.login);
+  const login = useAuthStore((state: any) => state.login);
   const password = watch('password');
 
   const onSubmit = async (data: FormData) => {
@@ -125,7 +125,7 @@ export default function Register() {
             <input
               {...register('passwordConfirm', { 
                 required: 'Please confirm password',
-                validate: (value) => value === password || 'Passwords do not match'
+                validate: (value: any) => value === password || 'Passwords do not match'
               })}
               type="password"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
