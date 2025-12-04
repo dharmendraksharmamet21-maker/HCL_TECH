@@ -4,18 +4,26 @@ const User = require('./User');
 const patientSchema = new mongoose.Schema({
   // Additional patient-specific fields
   allergies: [{
-    type: String
+    type: String,
+    trim: true
   }],
   medications: [{
-    name: String,
+    name: {
+      type: String,
+      trim: true
+    },
     dosage: String,
     frequency: String
   }],
   chronicConditions: [{
-    type: String
+    type: String,
+    trim: true
   }],
   emergencyContact: {
-    name: String,
+    name: {
+      type: String,
+      trim: true
+    },
     relationship: String,
     phone: String
   },
@@ -24,12 +32,26 @@ const patientSchema = new mongoose.Schema({
     enum: ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'Unknown'],
     default: 'Unknown'
   },
-  height: Number, // in cm
-  weight: Number, // in kg
+  height: {
+    type: Number,
+    min: 50,
+    max: 300
+  }, // in cm
+  weight: {
+    type: Number,
+    min: 20,
+    max: 500
+  }, // in kg
   assignedProviders: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Provider'
-  }]
+  }],
+  lastWellnessCheckup: Date,
+  wearableDeviceConnected: {
+    type: Boolean,
+    default: false
+  },
+  wearableDeviceType: String // e.g., 'FitBit', 'Apple Watch', etc.
 });
 
 const Patient = User.discriminator('patient', patientSchema);

@@ -6,15 +6,24 @@ const providerSchema = new mongoose.Schema({
   licenseNumber: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    trim: true
   },
   specialization: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
-  hospitalName: String,
+  hospitalName: {
+    type: String,
+    trim: true
+  },
   clinicAddress: String,
-  yearsOfExperience: Number,
+  yearsOfExperience: {
+    type: Number,
+    min: 0,
+    max: 70
+  },
   assignedPatients: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Patient'
@@ -23,8 +32,21 @@ const providerSchema = new mongoose.Schema({
     type: String,
     enum: ['pending', 'verified', 'rejected'],
     default: 'pending'
+  },
+  rating: {
+    type: Number,
+    min: 0,
+    max: 5,
+    default: 0
+  },
+  totalReviews: {
+    type: Number,
+    default: 0
   }
 });
+
+// Index for efficient queries
+providerSchema.index({ specialization: 1, verificationStatus: 1 });
 
 const Provider = User.discriminator('provider', providerSchema);
 
