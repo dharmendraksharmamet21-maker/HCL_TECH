@@ -23,8 +23,17 @@ export default function PatientDashboard() {
 
   useEffect(() => {
     useAuthStore.getState().initializeFromStorage();
-    if (!user) {
-      router.push('/login');
+    // If no user in storage (direct visit), create a demo patient for local dev
+    const storedUser = typeof window !== 'undefined' && localStorage.getItem('user');
+    if (!storedUser && !user) {
+      const demoUser = {
+        id: 'demo-patient',
+        email: 'demo.patient@example.com',
+        firstName: 'Demo',
+        lastName: 'Patient',
+        role: 'patient'
+      } as any;
+      useAuthStore.getState().login('local-dev-token', demoUser);
     }
   }, [user, router]);
 
