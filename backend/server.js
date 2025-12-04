@@ -9,6 +9,9 @@ const authRoutes = require('./routes/authRoutes');
 const patientRoutes = require('./routes/patientRoutes');
 const providerRoutes = require('./routes/providerRoutes');
 
+// Import middleware
+const { errorHandler } = require('./middleware/errorHandler');
+
 // Initialize Express app
 const app = express();
 
@@ -33,13 +36,8 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal Server Error'
-  });
-});
+// Global error handling middleware
+app.use(errorHandler);
 
 // Database connection
 const connectDB = async () => {
