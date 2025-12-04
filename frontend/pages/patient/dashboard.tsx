@@ -60,7 +60,11 @@ export default function PatientDashboard() {
     router.push('/login');
   };
 
-  if (!user || user.role !== 'patient') {
+  if (!user) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
+  if (user.role !== 'patient') {
     return <div>Unauthorized</div>;
   }
 
